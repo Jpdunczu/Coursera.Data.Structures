@@ -1,3 +1,42 @@
+/*
+Problem Description
+Task. You are given a series of incoming network packets, and your task is to simulate their processing.
+Packets arrive in some order. For each packet number 𝑖, you know the time when it arrived 𝐴𝑖 and the
+time it takes the processor to process it 𝑃𝑖 (both in milliseconds). There is only one processor, and it
+processes the incoming packets in the order of their arrival. If the processor started to process some
+packet, it doesn’t interrupt or stop until it finishes the processing of this packet, and the processing of
+packet 𝑖 takes exactly 𝑃𝑖 milliseconds.
+The computer processing the packets has a network buffer of fixed size 𝑆. When packets arrive,
+they are stored in the buffer before being processed. However, if the buffer is full when a packet
+arrives (there are 𝑆 packets which have arrived before this packet, and the computer hasn’t finished
+processing any of them), it is dropped and won’t be processed at all. If several packets arrive at the
+same time, they are first all stored in the buffer (some of them may be dropped because of that —
+those which are described later in the input). The computer processes the packets in the order of
+their arrival, and it starts processing the next available packet from the buffer as soon as it finishes
+processing the previous one. If at some point the computer is not busy, and there are no packets in
+the buffer, the computer just waits for the next packet to arrive. Note that a packet leaves the buffer
+and frees the space in the buffer as soon as the computer finishes processing it.
+
+Input Format. 
+The first line of the input contains the size 𝑆 of the buffer and the number 𝑛 of incoming
+network packets. Each of the next 𝑛 lines contains two numbers. 𝑖-th line contains the time of arrival
+𝐴𝑖 and the processing time 𝑃𝑖 (both in milliseconds) of the 𝑖-th packet. It is guaranteed that the
+sequence of arrival times is non-decreasing (however, it can contain the exact same times of arrival in
+milliseconds — in this case the packet which is earlier in the input is considered to have arrived earlier).
+Constraints. All the numbers in the input are integers. 1 ≤ 𝑆 ≤ 105; 1 ≤ 𝑛 ≤ 105; 0 ≤ 𝐴𝑖 ≤ 106;
+0 ≤ 𝑃𝑖 ≤ 103; 𝐴𝑖 ≤ 𝐴𝑖+1 for 1 ≤ 𝑖 ≤ 𝑛 − 1.
+
+Output Format. 
+For each packet output either the moment of time (in milliseconds) when the processor
+began processing it or −1 if the packet was dropped (output the answers for the packets in the same
+order as the packets are given in the input).
+
+Time Limits. C: 2 sec, C++: 2 sec, Java: 6 sec, Python: 8 sec. C#: 3 sec, Haskell: 4 sec, JavaScript: 6 sec,
+Ruby: 6 sec, Scala: 6 sec.
+
+Memory Limit. 512MB.
+*/
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -25,17 +64,16 @@ class Response {
 class Buffer {
     public Buffer(int size) {
         this.size_ = size;
-	//this.counter = 0;
         this.finish_time_ = new ArrayList<Integer>();
     }
 
+	//(Max time used: 3.10/6.00, max memory used: 199204864/536870912.)
+	
     public Response Process(Request request) {
         // write your code here
 	if( finish_time_.isEmpty() ) {
 		// the buffer is empty, start processing immediately
 		if( request.process_time > 0 ) {
-			//counter += request.process_time;
-			//finish_time_.add(counter);
 			finish_time_.add(request.process_time);
 		}
 		return new Response(false,request.arrival_time);
@@ -44,7 +82,6 @@ class Buffer {
 		if( request.arrival_time < finish_time_.get(finish_time_.size()-1) ) {
 			request.arrival_time = finish_time_.get(finish_time_.size()-1);
 		}
-		//counter += request.process_time;
 		finish_time_.add(request.arrival_time + request.process_time);
 		Response response = new Response(false,request.arrival_time);
 		return response;
@@ -52,7 +89,6 @@ class Buffer {
 		// Buffer is full.
 		// check to see if the previous packets have finished processing by this packets arrival time.
 		if( finish_time_.get(0) <= request.arrival_time ) {
-			//counter += request.process_time;
 			if( request.arrival_time < finish_time_.get(finish_time_.size()-1) ) {
 				request.arrival_time = finish_time_.get(finish_time_.size()-1);
 			}
@@ -65,7 +101,6 @@ class Buffer {
         return new Response(true, -1);
     }
 
-    //private int counter;
     private int size_;
     private ArrayList<Integer> finish_time_;
 }
