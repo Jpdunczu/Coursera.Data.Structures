@@ -1,0 +1,138 @@
+/*
+Problem: Convert array into heap
+
+Problem Description
+Task. The first step of the HeapSort algorithm is to create a heap from the array you want to sort. By the
+way, did you know that algorithms based on Heaps are widely used for external sort, when you need
+to sort huge files that don’t fit into memory of a computer?
+Your task is to implement this first step and convert a given array of integers into a heap. You will
+do that by applying a certain number of swaps to the array. Swap is an operation which exchanges
+elements 𝑎𝑖 and 𝑎𝑗 of the array 𝑎 for some 𝑖 and 𝑗. You will need to convert the array into a heap
+using only 𝑂(𝑛) swaps, as was described in the lectures. Note that you will need to use a min-heap
+instead of a max-heap in this problem.
+*/
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+
+public class BuildHeap {
+    private int[] data;
+    private List<Swap> swaps;
+	  private int size;
+
+    private FastScanner in;
+    private PrintWriter out;
+
+
+    //  𝑂(𝑛) implementation using no more than 4𝑛 swaps to convert the array into heap.
+    //  (Max time used: 1.26/3.00, max memory used: 62468096/536870912.)
+    private void generateSwaps() {
+
+      	swaps = new ArrayList<Swap>();
+	
+	      size = (data.length-1)/2;
+	      while( size >= 0 ) {
+		      siftDown( size );
+		      size = size -1;
+	      }
+	  }
+
+	private void siftUp( int i ) {
+		if( i > 0 ) {		
+			int parent = (i-1)/2;
+      
+			if( data[parent] > data[i] ) {
+				int temp = data[parent];
+				data[parent] = data[i];
+				data[i] = temp;
+				swaps.add( new Swap( parent,i ) );
+			}
+			i = parent;
+			siftUp(i);
+		}
+
+	}
+
+	private void siftDown( int i ) {
+		
+		int minIndex = i;
+
+		int left = 2*i+1;
+		if( left < data.length && data[left] < data[minIndex] )
+			minIndex = left;
+
+		int right = 2*i+2;
+		if( right < data.length && data[right] < data[minIndex] )
+			minIndex = right;
+
+		if( i != minIndex ) {
+			int temp = data[i];
+			data[i] = data[minIndex];
+			data[minIndex] = temp;
+			swaps.add( new Swap( i,minIndex ) );
+			siftDown( minIndex );
+		}
+	}
+  
+  public static void main(String[] args) throws IOException {
+        new BuildHeap().solve();
+    }
+
+    private void readData() throws IOException {
+        int n = in.nextInt();
+        data = new int[n];
+        for (int i = 0; i < n; ++i) {
+          data[i] = in.nextInt();
+        }
+    }
+
+    private void writeResponse() {
+        out.println(swaps.size());
+        for (Swap swap : swaps) {
+          out.println(swap.index1 + " " + swap.index2);
+        }
+    }
+
+    public void solve() throws IOException {
+        in = new FastScanner();
+        out = new PrintWriter(new BufferedOutputStream(System.out));
+        readData();
+        generateSwaps();
+        writeResponse();
+        out.close();
+    }
+
+    static class Swap {
+        int index1;
+        int index2;
+
+        public Swap(int index1, int index2) {
+            this.index1 = index1;
+            this.index2 = index2;
+        }
+    }
+
+    static class FastScanner {
+        private BufferedReader reader;
+        private StringTokenizer tokenizer;
+
+        public FastScanner() {
+            reader = new BufferedReader(new InputStreamReader(System.in));
+            tokenizer = null;
+        }
+
+        public String next() throws IOException {
+            while (tokenizer == null || !tokenizer.hasMoreTokens()) {
+                tokenizer = new StringTokenizer(reader.readLine());
+            }
+            return tokenizer.nextToken();
+        }
+
+        public int nextInt() throws IOException {
+            return Integer.parseInt(next());
+        }
+    }
+}
