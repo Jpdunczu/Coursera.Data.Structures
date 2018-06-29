@@ -56,11 +56,11 @@ public class JobQueue2 {
 	nextFreeTime = new java.util.ArrayList<>(numWorkers);
 	int job = 0;
 
-        for (int i = 0; i < m; ++i) {
+        for (int i = 0; i < m; i++) {
 		job = in.nextInt();
 		if( i < numWorkers ) {
 			Worker worker = new Worker(i,job);
-			nextFreeTime.add(i,worker);
+			nextFreeTime.add(worker);
 		}
             jobs[i] = job;
         }
@@ -95,9 +95,8 @@ public class JobQueue2 {
 				
 			assignedWorker[jobCount] = (int)nextFreeTime.get(0).getJob();
 				
-			for( int i = size/2; i >= 0; --i ) {
-				siftDown( i );
-			}
+			siftDown(0);
+			
 				
 			startTime[jobCount] = time;
 				
