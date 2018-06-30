@@ -21,7 +21,7 @@ public class JobQueue2 {
 		private int assignedJob;
 		private long startTime;
 
-		public Worker(int job, long time) {
+		public Worker( int job, long time) {
 			this.assignedJob = job;
 			this.startTime = time;
 		}
@@ -54,15 +54,18 @@ public class JobQueue2 {
 
 	// List of workers
 	nextFreeTime = new java.util.ArrayList<>(numWorkers);
-	int job = 0;
-
+	int jobLength = 0;
+	assignedWorker = new int[m] ;
+   	startTime = new long[m];
         for (int i = 0; i < m; i++) {
-		job = in.nextInt();
+		jobLength = in.nextInt();
 		if( i < numWorkers ) {
-			Worker worker = new Worker(i,job);
-			nextFreeTime.add(worker);
+			Worker worker = new Worker(i,jobLength);
+			nextFreeTime.add(i,worker);
+			startTime[i] = 0;
+			assignedWorker[i] = i;
 		}
-            jobs[i] = job;
+            jobs[i] = jobLength;
         }
     }
 
@@ -75,14 +78,13 @@ public class JobQueue2 {
     private void assignJobs() {
 
 	boolean working = true;
-	
+	int size = nextFreeTime.size();
 	int time = 0;
 	int duration = 0;
-	int jobCount = 0;
-	int size = nextFreeTime.size();
+	int jobCount = size;
 
         while ( working ) {
-		while ( nextFreeTime.get(0).getTime() <= time && jobCount < jobs.length ) {
+		while ( nextFreeTime.get(0).getTime() == time && jobCount < jobs.length ) {
 
 			while( jobs[jobCount] == 0 && jobCount < jobs.length ) {
 				assignedWorker[jobCount] = (int)nextFreeTime.get(0).getJob();
@@ -97,11 +99,9 @@ public class JobQueue2 {
 				
 			siftDown(0);
 			
-				
 			startTime[jobCount] = time;
 				
 			jobCount++;
-				
 		}
 		time++;
 			
